@@ -2,6 +2,8 @@
 #include<stdlib.h>
 #include<ctype.h>
 #include "hexdump.h"
+void packetinfo(char *packet,int size);
+void type(unsigned char *tpye);
 void pipeline();
 void commandLine(char *pcapfile);
 int main(int argc,char *arg[]){
@@ -122,11 +124,47 @@ void commandLine(char *pcapfile){
 	}
 	data[i]='\0';
 	DumpHex(data,i);
+	printf("\n\n");		
 	fclose(fp);
-	printf("\n");
-	
+	printf("\n");	
 }
-
+void packetinfo(const void *packet,int size){
+	int i,j;
+	unsigned char type[2];
+	printf("PACKET ANALYSING:\n\n");
+	printf("ETHERNET PART:\n")
+	printf("DESINATION MAC ADDRESS: ");
+	for(i=0;i<6;i++){
+		printf("%02X ",((unsigned char *)data)[i])
+	}
+	printf("\n");
+	printf("SOURCE:  ");
+	for(;i<12;i++){
+		printf("%02X ",((unsigned char *)data)[i])
+	}
+	printf("\n");
+	printf("PACKET TYPE: ");
+	for(;i<14;i++){
+		type[j++]=((unsigned char *)data)[i];
+		printf("%02X ",((unsigned char *)data)[i])
+	}
+	type(type);
+	printf("\n");
+	printf("PADDING : ");
+	for(j=41;j<size;j++){
+	printf("%02X ",((unsigned char *)data)[j])
+	}
+	printf("\n\n");
+	printf("ARP PART:\n");
+	for(;i<16;i++){
+	printf("%02X ",((unsigned char *)data)[i])
+	}
+}
+void type(unsigned char *tpye){
+	if(type[0] == 8 && type[1] == 6){
+		printf("(ARP PACKET)");
+	}
+}
 
 
 
