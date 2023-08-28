@@ -14,9 +14,12 @@ int main(int argc,char *arg[]){
 
 }
 void pipeline(){
-	unsigned char data[2000],*ptr;
-	unsigned int value;
-	int i,packetlen;
+	unsigned int value=0;
+	//while(value!=-1){
+	
+	unsigned char data[2000];
+	int i,packetlen,pac_num=0;
+	
 	// Global Header reading;
 	printf("GLOBAL HEADER READING:\n");
 	for(i=0;i<24;i++)
@@ -30,10 +33,13 @@ void pipeline(){
 		data[i]= value & 0xFF;
 	}
 	data[i]='\0';
+	//ptr=&data[0];
+	
 	DumpHex(data,i);
 	printf("\n\n");
 	// Record
-	printf("PCAP RECORD HEADER:\n");
+	while(1){
+	
 	for(i=0;i<16;i++)
 	{
 	    value=getchar();
@@ -45,12 +51,13 @@ void pipeline(){
 		data[i]= value & 0xFF;
 		
 	}
+	printf("PCAP RECORD HEADER:\n");
 	data[i]='\0';
 	DumpHex(data,i);
 	printf("\n\n");
-	ptr=data;
-	packetlen=*((unsigned int*)(ptr+8));
 	
+	packetlen=data[8];
+	printf("*** PACKET NUMBER : (%d) ***\n\n",++pac_num);
 	// PAcket data
 	printf("Packet Data:\n");
 	for(i=0;i<packetlen;i++)
@@ -65,18 +72,22 @@ void pipeline(){
 		
 	}
 	data[i]='\0';
+	
 	DumpHex(data,i);
+	packetinfo(data,packetlen);
 	printf("\n");
+	//ptr=NULL;
+	}
 }
 void commandLine(char *pcapfile){
 	FILE *fp;
-	unsigned char data[2000],*ptr;
-	unsigned int value;
-	int i,packetlen;
 	if((fp=fopen(pcapfile,"rb"))== NULL){
         printf("No such pcap file found. Error.\n");
         exit(1);
     }
+    	unsigned char data[2000];
+	unsigned int value;
+	int i,packetlen;
 	// Global Header reading;
 	printf("GLOBAL HEADER READING:\n");
 	for(i=0;i<24;i++)
@@ -92,8 +103,8 @@ void commandLine(char *pcapfile){
 	data[i]='\0';
 	DumpHex(data,i);
 	printf("\n\n");
+	while(1){
 	// Record
-	printf("PCAP RECORD HEADER:\n");
 	for(i=0;i<16;i++)
 	{
 	    value=fgetc(fp);
@@ -105,12 +116,10 @@ void commandLine(char *pcapfile){
 		data[i]= value & 0xFF;
 		
 	}
+	printf("PCAP RECORD HEADER:\n");
 	data[i]='\0';
+	packetlen=data[8];
 	DumpHex(data,i);
-	printf("\n\n");
-	ptr=data;
-	packetlen=*((unsigned int*)(ptr+8));
-	
 	// PAcket data
 	printf("Packet Data:\n");
 	for(i=0;i<packetlen;i++)
@@ -119,19 +128,23 @@ void commandLine(char *pcapfile){
 	    if(value==EOF)
 	     {
 		 putchar('\n');
-		 return;
+		 break;
 	     }
 		data[i]= value & 0xFF;
 		
 	}
 	data[i]='\0';
 	DumpHex(data,i);
-	printf("\n\n");
-	fclose(fp);	
-	packetinfo(data,packetlen);	
+	printf("\n");	
+	packetinfo(data,packetlen);
+	packetlen=0;
+	}
+	fclose(fp);
+	//packetlen=0;	
+	
 }
 void packetinfo(unsigned char *data,int size){
-	int i,j;
+	int i,j=0;
 	unsigned char type[2];
 	printf("######################## PACKET ANALYSING ##########################\n\n");
 	//1.ETHERNET II PART

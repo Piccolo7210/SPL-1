@@ -10,7 +10,7 @@ void DumpHex(const void* data, size_t size){
 	{
 	    if(i==0)printf("%06X ",i);
 	    else {
-	    	if(i%16==8)printf(" -- ");
+	    	if(i%16==8)printf(" =");
 	    	 else if(i%16 == 0)printf("\n%06X ",i);
 	    	}
 	    printf(" %02X",((unsigned char*)data)[i]);
